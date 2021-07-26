@@ -3,7 +3,7 @@
 
 # Brief description
 - This loss function generalizes multiclass cross-entropy by introducing a hyperparameter gamma(focusing parameter) that allows to focus on hard examples.
-<img src="https://render.githubusercontent.com/render/math?math=e^{i +\pi} =x+1">
+<img src="https://render.githubusercontent.com/render/math?math=FL(p_t)=-\alpha_t(1-p_t)^\gamma\log(p_t)">
 
 # Prerequisites
 > - torch
