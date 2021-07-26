@@ -1,8 +1,9 @@
 # Overview
-- This is an implementation of binaray focal loss and multi-class focal loss in pytorch.
+- This is an implementation of multi-class focal loss in pytorch.
 
 # Brief description
 - This loss function generalizes multiclass cross-entropy by introducing a hyperparameter gamma(focusing parameter) that allows to focus on hard examples.
+<img src="https://render.githubusercontent.com/render/math?math=e^{i +\pi} =x+1">
 
 # Prerequisites
 > - torch
