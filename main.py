@@ -2,6 +2,8 @@ import torch
 import torch.nn as nn
 import focal_loss as Focalloss
 
+device = ['cuda' if torch.cuda.is_available() else 'cpu'][0]
+
 weight = torch.FloatTensor([1, 200, 1e-5])
 
 probs = torch.tensor([[0.0, 0.2, 0.8],
@@ -12,7 +14,7 @@ probs = torch.tensor([[0.0, 0.2, 0.8],
 labels = torch.tensor([2,2,0,1])
 
 
-focal_loss = Focalloss(weight=weight, gamma=2)
+focal_loss = Focalloss(weight=weight, gamma=2, device=device)
 print("Focal Loss: {}\n".format(focal_loss(probs, labels)))
 
 
