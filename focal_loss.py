@@ -2,18 +2,20 @@ import torch
 import torch.nn as nn
 
 class FocalLoss(nn.modules.loss._WeightedLoss):
-    def __init__(self, weight=None, gamma=2):
+    def __init__(self, weight=None, gamma=2, device='cpu'):
         super(FocalLoss, self).__init__(weight)
         # focusing hyper-parameter gamma
         self.gamma = gamma
 
         # weight parameter will act as the alpha parameter to balance class weights
         self.weight = weight
+        
+        self.device = device
 
         self.ce_loss = nn.CrossEntropyLoss()
 
     def forward(self, _input, _target):
-        focal_loss = torch.tensor(0)
+        focal_loss = 0
 
         for i in range(len(_input)):
             cur_ce_loss = self.ce_loss(_input[i].view(-1, _input[i].size()[-1]), _target[i].view(-1))
@@ -27,7 +29,8 @@ class FocalLoss(nn.modules.loss._WeightedLoss):
             focal_loss = focal_loss + cur_focal_loss
 
         if self.weight is not None:
-            return focal_loss / self.weight.sum()
-
+            focal_loss = focal_loss / self.weight.sum()
+            return focal_loss.to(self.device)
+        
         focal_loss = focal_loss / len(_input)
-        return focal_loss
+        return focal_loss.to(self.device)
