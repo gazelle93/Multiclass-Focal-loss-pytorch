@@ -35,7 +35,7 @@ class FocalLoss(nn.modules.loss._WeightedLoss):
 
         if self.weight is not None:
             focal_loss = focal_loss / self.weight.sum()
-            return focal_loss.to(self.device)
-        
-        focal_loss = focal_loss / len(_input)
+        else:
+            focal_loss = focal_loss / len(_input)
+            
         return focal_loss.to(self.device)
