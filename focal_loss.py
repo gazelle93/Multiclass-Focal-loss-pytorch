@@ -20,13 +20,13 @@ class FocalLoss(nn.modules.loss._WeightedLoss):
 
         for i in range(len(_input)):
             # -log(pt)
-            cur_ce_loss = self.ce_loss(_input[i].view(-1, _input[i].size()[-1]), _target[i].view(-1)) / self.weight.sum()
+            cur_ce_loss = self.ce_loss(_input[i].view(-1, _input[i].size()[-1]), _target[i].view(-1))
             # pt
             pt = torch.exp(-cur_ce_loss)
 
             if self.weight is not None:
                 # alpha * (1-pt)^gamma * -log(pt)
-                cur_focal_loss = self.weight[_target[i]] * (1 - pt) ** self.gamma * cur_ce_loss
+                cur_focal_loss = self.weight[_target[i]] * (1 - pt) ** self.gamma * cur_ce_loss / self.weight.sum()
             else:
                 # (1-pt)^gamma * -log(pt)
                 cur_focal_loss = (1 - pt) ** self.gamma * cur_ce_loss
