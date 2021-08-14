@@ -26,13 +26,16 @@ class FocalLoss(nn.modules.loss._WeightedLoss):
 
             if self.weight is not None:
                 # alpha * (1-pt)^gamma * -log(pt)
-                cur_focal_loss = self.weight[_target[i]] * ((1 - pt) ** self.gamma) * cur_ce_loss / self.weight.sum()
+                cur_focal_loss = self.weight[_target[i]] * ((1 - pt) ** self.gamma) * cur_ce_loss
             else:
                 # (1-pt)^gamma * -log(pt)
-                cur_focal_loss = (1 - pt) ** self.gamma * cur_ce_loss
+                cur_focal_loss = ((1 - pt) ** self.gamma) * cur_ce_loss
                 
             focal_loss = focal_loss + cur_focal_loss
 
-        focal_loss = focal_loss / len(_input)
-            
+        if self.weight is not None:
+            focal_loss = focal_loss / self.weight.sum()
+            return focal_loss.to(self.device)
+        
+        focal_loss = focal_loss / torch.tensor(len(probs))    
         return focal_loss.to(self.device)
