@@ -26,7 +26,7 @@ class FocalLoss(nn.modules.loss._WeightedLoss):
 
             if self.weight is not None:
                 # alpha * (1-pt)^gamma * -log(pt)
-                cur_focal_loss = self.weight[_target[i]] * (1 - pt) ** self.gamma * cur_ce_loss / self.weight.sum()
+                cur_focal_loss = self.weight[_target[i]] * ((1 - pt) ** self.gamma) * cur_ce_loss / self.weight.sum()
             else:
                 # (1-pt)^gamma * -log(pt)
                 cur_focal_loss = (1 - pt) ** self.gamma * cur_ce_loss
