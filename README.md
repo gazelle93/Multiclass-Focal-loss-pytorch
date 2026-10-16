@@ -28,31 +28,6 @@ It is a drop-in replacement for `nn.CrossEntropyLoss`: same `weight`,
 
 # Corrections (2026-10-16)
 
-An audit found that this code did not run and, where it did, computed the
-wrong number when class weights were used. If you used it, the second item is
-the one worth re-checking.
-
-- **The package did not run.** `main.py` imported the module and then called
-  it (`import focal_loss as Focalloss` followed by `Focalloss(...)`), so the
-  only entry point raised `TypeError` immediately.
-- **The unweighted path always crashed.** The no-weight branch divided by
-  `len(probs)`, a name that only existed in `main.py`, so the default
-  `FocalLoss()` raised `NameError` on every call.
-- **Weighted loss used the wrong denominator.** It divided by the sum of all
-  class weights rather than the summed weight of the samples in the batch,
-  which is what `nn.CrossEntropyLoss` does. The example in this repository
-  happened to hide it: with weights `[1, 200, 1e-5]` and labels `[2, 2, 0, 1]`
-  the two denominators agree to five decimal places. With labels `[1, 1, 1, 1]`
-  the loss came out 3.98x too large. Every check now randomises the labels.
-- **The forward pass looped over the batch in Python**, calling
-  `nn.CrossEntropyLoss` once per sample. It is now vectorised: 13x faster at a
-  batch of 256 and 149x at 2048.
-- **No `reduction`, no `ignore_index`.** Both are now supported with the same
-  semantics as `nn.CrossEntropyLoss`, along with `(N, C, d1, ...)` inputs for
-  token-level tasks.
-- **The `device` argument is gone.** `weight` is a registered buffer, so the
-  standard `.to(device)` already handles it; the extra argument only moved the
-  output, which was already on the right device.
-
-`test_focal_loss.py` pins all of this. Against the previous code 10 of its 12
-checks fail.
+Earlier versions did not run, and when class weights were used the loss
+divided by the wrong denominator, so weighted results were wrong for most
+label distributions. Both are fixed, and `test_focal_loss.py` guards them.
